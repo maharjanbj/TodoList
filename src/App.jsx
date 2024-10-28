@@ -4,22 +4,37 @@ import "./App.css";
 function App() {
   const [appear, setAppear] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [searchTerm, setSearchTerm] = useState("");
   const [todoList, setTodoList] = useState([
     {
       id: "1",
       title: "title 1",
+      status: "TODO",
     },
     {
       id: "2",
       title: "title 2",
+      status: "PROGRESS",
     },
     {
       id: "3",
       title: "title 3",
+      status: "Done",
     },
     {
       id: "4",
       title: "title 4",
+      status: "TODO",
+    },
+    {
+      id: "5",
+      title: "title 5",
+      status: "PROGRESS",
+    },
+    {
+      id: "6",
+      title: "title 6",
+      status: "DONE",
     },
   ]);
 
@@ -29,6 +44,7 @@ function App() {
 
   const initialData = {
     title: "",
+    status: "TODO",  //Default Value
   }
 
   const [ formData, setFormData ] = useState({
@@ -76,6 +92,15 @@ function App() {
     setTodoList(todoList.filter((v) => v.id !== id));
   }
 
+  const searchHandler = (e) => {
+    setSearchTerm(e.target.value);
+  }
+
+  // Filter the todoList based on searchTerm
+  const filteredTodoList = todoList.filter((task) =>
+    task.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <section className="todo-section">
@@ -86,9 +111,9 @@ function App() {
               <button onClick={toggleDisplay}>Add Task</button>
             </div>
           </div>
-          <div>
-            <input type="text" name="search" placeholder="Search here..." />
-            <button>Search</button>
+          <div className="search-box">
+            <input type="text" name="search" className="search-bar" placeholder="Search here..." value={searchTerm} onChange={searchHandler} />
+            <div className="search-btn">Search</div>
           </div>
           <div className={`add-dialog dialog ${!appear ? "hide" : ""}`}>
             <div className="backdrop" onClick={toggleDisplay}></div>
@@ -98,18 +123,11 @@ function App() {
                 <input type="text" name="title" placeholder="task......" onChange={inputHandler} />
               </div>
               <div className="checkbox">
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Todo</label>
-                </div>
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Progress</label>
-                </div>
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Done</label>
-                </div>
+                <select name="status" value={formData.status} onChange={inputHandler}>
+                  <option value="TODO">Todo</option>
+                  <option value="PROGRESS">Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
               </div>
               <div>
                 <button onClick={addTask}>Save</button>
@@ -119,28 +137,11 @@ function App() {
           </div>
 
           <div className="content-box">
-            {todoList.map((v, key) => (
+            {filteredTodoList.map((v, key) => (
               <div key={key} className="todo-content">
                 <div>{v.title}</div>
-                <div className="checkbox">
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Todo</label>
-                </div>
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Progress</label>
-                </div>
-                <div>
-                  <input type="radio" name="checkbox" />
-                  <label>Done</label>
-                </div>
-              </div>
-                {/* <select name="dropdown" id="dropdown">
-                  <option name="todo" value="todo">Todo</option>
-                  <option name="progress" value="progress">Progress</option>
-                  <option name="done" value="done">Done</option>
-                </select> */}
+                <div>{v.status}</div>
+                
                 <div>
                   <button onClick={() => editTask(v.id)}>Edit</button>
                   <button onClick={() => deleteTask(v.id)}>Delete</button>
